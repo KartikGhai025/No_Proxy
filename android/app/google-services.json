@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "74062781735",
+    "project_id": "fair-attendance",
+    "storage_bucket": "fair-attendance.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:74062781735:android:243baf373c221b0a899d02",
+        "android_client_info": {
+          "package_name": "com.example.fair_attendance"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "74062781735-hs7hqeh2r9hcgb0dubb341e4d7li2ofg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fair_attendance",
+            "certificate_hash": "8ac091ee7cd5f0052e854775a230e11c70ec9151"
+          }
+        },
+        {
+          "client_id": "74062781735-do6vkqofbjchc0m8lgg6ne79j88a28cn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEowpVxtMjC-zf7gTSHgIo74xNFWDF5s0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "74062781735-do6vkqofbjchc0m8lgg6ne79j88a28cn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
