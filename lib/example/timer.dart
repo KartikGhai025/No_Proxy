@@ -1,21 +1,6 @@
 import 'package:flutter/material.dart';
-//import 'count_down.dart';
 import 'count_up.dart';
 
-
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MainPage(),
-    );
-  }
-}
 
 class MainPage extends StatelessWidget {
   @override
