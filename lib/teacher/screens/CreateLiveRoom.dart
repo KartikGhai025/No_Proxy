@@ -1,178 +1,125 @@
-import 'dart:async';
-// import 'dart:io';
-
-import 'package:fl_location/fl_location.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fair_attendance/teacher/screens/in_live.dart';
 import 'package:flutter/material.dart';
-enum ButtonState { LOADING, DONE, DISABLED }
+import 'package:location/location.dart';
 
 class CreateRoom extends StatefulWidget {
+  // String en;
+  //
+  // CreateRoom(this.en) ;
+
   @override
-  _CreateRoomState createState() => _CreateRoomState();
+  State<CreateRoom> createState() => _CreateRoomState();
 }
 
 class _CreateRoomState extends State<CreateRoom> {
-  StreamSubscription<Location>? _locationSubscription;
+  var items = [
+    'English',
+    'Software Development Fundamentals',
+    'Applied Physics',
+    'Engineering Mathematics',
+    'Data Structures',
+    'Database Management System',
+    'Computer Networks',
+    'Theory of Computation',
+    'Full Stack Development',
+    'Artificial Intelligence'
+  ];
 
-  String _result = '';
-  ButtonState _getLocationButtonState = ButtonState.DONE;
-  ButtonState _listenLocationStreamButtonState = ButtonState.DONE;
+  Location location = Location();
+  bool _serviceEnabled = false;
+  late PermissionStatus _permissionGranted;
+  late LocationData _locationData;
+  bool isGetLocation = false;
+  late LocationData data;
+  bool isLoading = true;
 
-  Future<bool> _checkAndRequestPermission({bool? background}) async {
-    if (!await FlLocation.isLocationServicesEnabled) {
-      // Location services are disabled.
-      return false;
+  void get_location() async {
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (_serviceEnabled) return;
     }
 
-    var locationPermission = await FlLocation.checkLocationPermission();
-    if (locationPermission == LocationPermission.deniedForever) {
-      // Cannot request runtime permission because location permission is denied forever.
-      return false;
-    } else if (locationPermission == LocationPermission.denied) {
-      // Ask the user for location permission.
-      locationPermission = await FlLocation.requestLocationPermission();
-      if (locationPermission == LocationPermission.denied ||
-          locationPermission == LocationPermission.deniedForever) return false;
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) return;
     }
-
-    // Location permission must always be allowed (LocationPermission.always)
-    // to collect location data in the background.
-    if (background == true &&
-        locationPermission == LocationPermission.whileInUse) return false;
-
-    // Location services has been enabled and permission have been granted.
-    return true;
-  }
-
-  void _refreshPage() {
-    setState(() {});
-  }
-
-  Future<void> _getLocation() async {
-    if (await _checkAndRequestPermission()) {
-      _getLocationButtonState = ButtonState.LOADING;
-      _listenLocationStreamButtonState = ButtonState.DISABLED;
-      _refreshPage();
-
-      final timeLimit = const Duration(seconds: 10);
-      await FlLocation.getLocation(timeLimit: timeLimit).then((location) {
-        _result = location.toJson().toString();
-      }).onError((error, stackTrace) {
-        _result = error.toString();
-      }).whenComplete(() {
-        _getLocationButtonState = ButtonState.DONE;
-        _listenLocationStreamButtonState = ButtonState.DONE;
-        _refreshPage();
-      });
-    }
-  }
-
-  Future<void> _listenLocationStream() async {
-    if (await _checkAndRequestPermission()) {
-      if (_locationSubscription != null) await _cancelLocationSubscription();
-
-      _locationSubscription = FlLocation.getLocationStream()
-          .handleError(_handleError)
-          .listen((event) {
-        _result = event.toJson().toString();
-        _refreshPage();
-      });
-
-      _getLocationButtonState = ButtonState.DISABLED;
-      _refreshPage();
-    }
-  }
-
-  Future<void> _cancelLocationSubscription() async {
-    await _locationSubscription?.cancel();
-    _locationSubscription = null;
-
-    _getLocationButtonState = ButtonState.DONE;
-    _refreshPage();
-  }
-
-  void _handleError(dynamic error, StackTrace stackTrace) {
-    _result = error.toString();
-    _refreshPage();
+    _locationData = await location.getLocation();
+    setState(() {
+      isGetLocation = true;
+      isLoading = false;
+    });
   }
 
   @override
   void initState() {
+    get_location();
+
     super.initState();
-    // The getLocationServicesStatusStream function is not available in Web.
-    if (!kIsWeb) {
-      FlLocation.getLocationServicesStatusStream().listen((event) {
-        print('location services status: $event');
-      });
-    }
   }
 
   @override
-  void dispose() {
-    _locationSubscription?.cancel();
+  void dispose() async {
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: _buildContentView(),
-      ),
-    );
-  }
+    // var data = FirebaseFirestore.instance.collection("teacher").doc(widget.en).get().then((value) {
+    //   print(value['teacher']);
 
-  Widget _buildContentView() {
-    final buttonList = Column(
-      children: [
-        const SizedBox(height: 8.0),
-        _buildTestButton(
-          text: 'GET Location',
-          state: _getLocationButtonState,
-          onPressed: _getLocation,
-        ),
-        const SizedBox(height: 8.0),
-        _buildTestButton(
-          text: _locationSubscription == null
-              ? 'Listen LocationStream'
-              : 'Cancel LocationSubscription',
-          state: _listenLocationStreamButtonState,
-          onPressed: _locationSubscription == null
-              ? _listenLocationStream
-              : _cancelLocationSubscription,
-        ),
-      ],
-    );
+    // });
 
-    final resultText =
-    Text(_result, style: Theme.of(context).textTheme.bodyText1);
 
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      children: [
-        buttonList,
-        const SizedBox(height: 10.0),
-        resultText,
-      ],
-    );
-  }
-
-  Widget _buildTestButton({
-    required String text,
-    required ButtonState state,
-    required VoidCallback? onPressed,
-  }) {
-    return ElevatedButton(
-      child: state == ButtonState.LOADING
-          ? SizedBox.fromSize(
-        size: const Size(20.0, 20.0),
-        child: const CircularProgressIndicator(strokeWidth: 2.0),
-      )
-          : Text(text),
-      onPressed: state == ButtonState.DONE ? onPressed : null,
-    );
+    return Container(
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage("assets/images/bg3.png"), fit: BoxFit.cover)),
+        child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: isLoading
+                  ? const CircularProgressIndicator()
+                  : Center(
+                      child: ListView.builder(
+                          itemCount: items.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return InkWell(
+                              onTap: () async {
+                                get_location();
+                                await FirebaseFirestore.instance
+                                    .collection("live")
+                                    .doc('class')
+                                    .update({
+                                  'isClass': true,
+                                  'isStop': false,
+                                  'la': _locationData.latitude,
+                                  'lo': _locationData.longitude,
+                                  'subject': items[index],
+                                  'teacher':''
+                                });
+                                //print(_locationData.latitude);
+                                //print(_locationData.longitude);
+                                Navigator.of(context)
+                                    .pushReplacement(MaterialPageRoute(
+                                  builder: (context) => InLive(items[index]),
+                                ));
+                                //  Navigator.pop(context);
+                              },
+                              child: ListTile(
+                                  leading: const Icon(Icons.arrow_forward_ios),
+                                  trailing: Text(
+                                    Random().nextInt(10).toString(),
+                                    style: const TextStyle(
+                                        color: Colors.green, fontSize: 15),
+                                  ),
+                                  title: Text(items[index])),
+                            );
+                          }),
+                    ),
+            )));
   }
 }

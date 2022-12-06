@@ -1,7 +1,5 @@
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
@@ -14,7 +12,7 @@ class AuthMethods {
     required String eno,
     required String password,
     required String name,
-    required String sem
+ //   required String sem
 
   }) async {
     String res = "Some error Occurred";
@@ -33,9 +31,7 @@ class AuthMethods {
             .set({
           'eno': eno,
           'name':name,
-          'sem':sem,
-          'isteacher': false,
-          'isstudent':true
+
         });
 
         res = "success";
@@ -49,7 +45,6 @@ class AuthMethods {
   }
 
   Future<String> teacher_signUpUser({
-    required String email,
     required String password,
     required String name,
     required String eno
@@ -57,23 +52,21 @@ class AuthMethods {
   }) async {
     String res = "Some error Occurred";
     try {
-      if (email.isNotEmpty ||
+      if (eno.isNotEmpty ||
           password.isNotEmpty ) {
 
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
-          email: email,
+          email: eno+'@juetguna.in',
           password: password,
         );
 
         await _firestore
             .collection("teacher")
-            .doc(cred.user!.uid)
+            .doc(eno)
             .set({
-          'email': email,
+
           'name':name,
           'eno':eno,
-          'isteacher': true,
-          'isstudent':false
         });
 
         res = "success";

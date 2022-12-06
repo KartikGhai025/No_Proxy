@@ -1,10 +1,7 @@
-import 'package:fair_attendance/example/timer.dart';
 import 'package:fair_attendance/first_page.dart';
-import 'package:fair_attendance/homepage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'example/count_up.dart';
 
 
 void main() async {
@@ -23,7 +20,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: CountUpTimerPage());
+        home: FirstPage());
   }
 }
 

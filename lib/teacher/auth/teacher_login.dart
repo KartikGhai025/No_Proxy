@@ -1,10 +1,8 @@
-import 'package:fair_attendance/main.dart';
-import 'package:fair_attendance/teacher/screens/teacher_home.dart';
 import 'package:flutter/material.dart';
 import '../../authmethods.dart';
 import '../../widgets/text_input_field.dart';
+import '../screens/teacher_home.dart';
 import 'Teacher_signup.dart';
-
 
 class TeacherLoginScreen extends StatefulWidget {
   const TeacherLoginScreen({Key? key}) : super(key: key);
@@ -31,10 +29,14 @@ class _TeacherLoginScreenState extends State<TeacherLoginScreen> {
       _isLoading = true;
     });
     String res = await AuthMethods().loginUser(
-        email: _emailController.text, password: _passwordController.text);
+        email: _emailController.text + '@juetguna.in',
+        password: _passwordController.text);
     if (res == 'success') {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => TeacherHomePage()),
+        MaterialPageRoute(
+            builder: (context) => TeacherHomePage(_emailController.text)
+                //TeacherHomePage(_emailController.text)
+        ),
       );
 
       setState(() {
@@ -49,9 +51,6 @@ class _TeacherLoginScreenState extends State<TeacherLoginScreen> {
   }
 
   @override
-
-
-
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -62,39 +61,34 @@ class _TeacherLoginScreenState extends State<TeacherLoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Flexible(
-                child: Container(),
-                flex: 2,
-              ),
-              Text(
-                'Relax \nDear Teachers',
-                style: TextStyle(
-                  fontSize: 35,
-                  color: buttonColor,
-                  fontWeight: FontWeight.w900,
-                ),
+              Container(
+                height: 300,
+                width: 350,
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage('assets/images/light-1.png'),
+                        fit: BoxFit.fitWidth)),
               ),
               const Text(
-                'Login',
+                "Teacher\nLogin",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
+                    color: Colors.red,
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 45),
-              TextInputField(
-                labelText: 'enter your email',
+              const SizedBox(height: 30),
+              EmpInputField(
+                labelText: 'enter your employee id',
                 controller: _emailController,
                 icon: Icons.mail_rounded,
               ),
               const SizedBox(
-                height: 24,
+                height: 10,
               ),
-              passFieldInput(
+              PassFieldInput(
                 hintText: 'Enter your password',
                 textInputType: TextInputType.text,
                 textEditingController: _passwordController,
-
               ),
               const SizedBox(
                 height: 24,
@@ -102,13 +96,6 @@ class _TeacherLoginScreenState extends State<TeacherLoginScreen> {
               InkWell(
                 onTap: loginUser,
                 child: Container(
-                  child: !_isLoading
-                      ? const Text(
-                    'Log in',
-                  )
-                      : const CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -118,35 +105,43 @@ class _TeacherLoginScreenState extends State<TeacherLoginScreen> {
                     ),
                     color: buttonColor,
                   ),
+                  child: !_isLoading
+                      ? const Text(
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                          'Log in',
+                        )
+                      : const CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
                 ),
               ),
-              const SizedBox(
-                height: 12,
-              ),
-              Flexible(
-                flex: 2,
-                child: Container(),
-              ),
+
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     child: const Text(
+                      style: TextStyle(
+                          // fontSize: 20,
+                          color: Colors.black),
                       'Dont have an account?',
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => TeacherSignupScreen(),
+                        builder: (context) => const TeacherSignupScreen(),
                       ),
                     ),
-                    child:  Container(
+                    child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child:  const Text(
+                      child: const Text(
                         ' Signup.',
                         style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

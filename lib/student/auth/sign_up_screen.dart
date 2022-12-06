@@ -1,11 +1,7 @@
-import 'dart:typed_data';
 import 'package:fair_attendance/student/homescreens/home.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../homepage.dart';
 import '../../widgets/text_input_field.dart';
 import '../../authmethods.dart';
-import 'login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -29,26 +25,26 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void signUpUser() async {
-    // set loading to true
+
     setState(() {
       _isLoading = true;
     });
 
-    // signup user using our authmethodds
+
     String res = await AuthMethods().signUpUser(
         eno: _enoController.text,
         password: _passwordController.text,
       name:_name.text,
-      sem:  _sem.text
+   //   sem:  _sem.text
          );
     if (res == "success") {
       setState(() {
         _isLoading = false;
       });
-      // navigate to the home screen
+
       Navigator.of(context).push(
         MaterialPageRoute(
-            builder: (context) => HomePage()),
+            builder: (context) => HomePage(_enoController.text)),
 
 
       );
@@ -80,27 +76,39 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
 
 
-
+              Text(
+                'Now, \nNo Proxy',
+                style: TextStyle(
+                  fontSize: 35,
+                  color: Colors.red,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const Text(
+                'Signup',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               const SizedBox(
                 height: 24,
               ),
               TextInputField(controller: _name, labelText: 'enter your name', icon: Icons.person,  ),
               const SizedBox(
-                height: 24,
+                height: 10,
               ),
-              SemInputField(controller: _sem, labelText: 'enter your semester', icon: Icons.pending_actions, ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextFieldInput(
-                hintText: 'Enter your eno',
-                textInputType: TextInputType.name,
-                textEditingController: _enoController,
+
+              EnInputField(
+                labelText: 'Enter your eno',
+                icon: Icons.numbers,
+                controller: _enoController,
               ),
               const SizedBox(
-                height: 24,
+                height: 10,
               ),
-              passFieldInput(
+              PassFieldInput(
                 hintText: 'Enter your password',
                 textInputType: TextInputType.text,
                 textEditingController: _passwordController,
@@ -115,18 +123,21 @@ class _SignupScreenState extends State<SignupScreen> {
               InkWell(
                 onTap: signUpUser,
                 child: Container(
+
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: const ShapeDecoration(
+
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
-                    color: Colors.blue,
+                    color: Colors.red,
                   ),
                   child: !_isLoading
-                      ? const Text(
-                    'Sign up',
+                      ? Text(
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    'Sign Up',
                   )
                       : const CircularProgressIndicator(
                     color: Colors.red,
@@ -144,21 +155,27 @@ class _SignupScreenState extends State<SignupScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     child: const Text(
+                      style: TextStyle(
+
+                          color: Colors.black
+                      ),
                       'Already have an account?',
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       child: const Text(
                         ' Login.',
                         style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.red,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
                   ),
                 ],
